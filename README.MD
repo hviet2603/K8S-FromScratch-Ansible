@@ -1,6 +1,6 @@
 # Build a K8s cluser v1.30.4 with Cilium network addon and HAProxy ingress controller
 
-This repository stores Vagrantfiles and Ansible playbooks for building a K8s cluster v1.30.4 with Cilium as the network addon and HAProxy implementation for the ingress controller. The cluster composed of 1 master node and 2 worker nodes.
+This repository stores Vagrantfiles and Ansible playbooks for building a K8s cluster v1.30.4 with Cilium as the network addon and HAProxy implementation for the ingress controller. The cluster is composed of 1 master node and 2 worker nodes.
 
 ## Preparation
 
