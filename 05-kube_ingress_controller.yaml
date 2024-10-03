@@ -1,0 +1,13 @@
+# Deploy HAProxy Ingress Controller
+- hosts: k8s_masters
+  become: true
+  environment:
+    KUBECONFIG: "{{ kube_config_path }}"
+  tasks:
+    - name: Copy HAProxy Ingress Controller manifest to master node
+      copy:
+        src: ./manifests/ingress-controller/haproxy-ingress.yaml
+        dest: /tmp/haproxy-ingress.yaml
+    
+    - name: Deploy HAProxy Ingress Controller
+      shell: kubectl apply -f /tmp/haproxy-ingress.yaml

@@ -1,0 +1,6 @@
+[k8s_masters]
+user@local-k8s-master
+
+[k8s_workers]
+user@local-k8s-vworker1
+user@local-k8s-vworker2

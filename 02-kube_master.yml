@@ -1,0 +1,20 @@
+---
+- hosts: k8s_masters
+  name: Initialize the Controlplane
+  become: yes
+  tasks:
+    - name: Check if Controlplane is setup
+      shell:
+        cmd: netstat -tlnp | grep kube-controll
+      ignore_errors: yes
+      register: cmd
+    #- debug:
+    #    var: cmd.rc
+    - name: Initialize the Controlplane
+      shell:
+        cmd: kubeadm init --node-name={{ node_name }} 
+          --kubernetes-version={{ k8s_version }} 
+          --apiserver-advertise-address={{ master_ip }} 
+          --pod-network-cidr="{{ pod_net_cidr }}"
+          #--skip-phases=addon/kube-proxy
+      when: cmd.rc != 0 

@@ -1,0 +1,17 @@
+- hosts: all
+  become: true
+  pre_tasks:
+    - name: Install update
+      tags: always
+      apt:
+        update_cache: yes
+    - name: Install some linux utilities
+      apt:
+        name:
+          - net-tools
+        state: present  
+
+- hosts: all
+  become: true
+  roles:
+    - kube_utils

@@ -1,0 +1,13 @@
+# Deploy Nginx
+- hosts: k8s_masters
+  become: true
+  environment:
+    KUBECONFIG: "{{ kube_config_path }}"
+  tasks:
+    - name: Copy Nginx manifest to master node
+      copy:
+        src: ./manifests/nginx-sample-app/nginx-app.yaml
+        dest: /tmp/nginx-app.yaml
+    
+    - name: Deploy Nginx
+      shell: kubectl apply -f /tmp/nginx-app.yaml

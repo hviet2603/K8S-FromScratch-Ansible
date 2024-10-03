@@ -1,0 +1,2 @@
+master_ip: 192.168.0.2
+node_name: local-k8s-vworker1

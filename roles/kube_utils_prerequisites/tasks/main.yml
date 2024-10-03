@@ -1,0 +1,78 @@
+# Install a container runtime (containerd)
+- name: Install containerd
+  unarchive:
+    src: https://github.com/containerd/containerd/releases/download/v1.7.7/containerd-1.7.7-linux-amd64.tar.gz
+    dest: /usr/local/bin
+    extra_opts: "--strip-components=1"
+    remote_src: yes
+    mode: 0755
+    owner: root
+    group: root
+
+# Install runc
+- name: Download runc
+  get_url:
+    url: https://github.com/opencontainers/runc/releases/download/v1.1.9/runc.amd64
+    dest: /tmp/runc.amd64
+
+- name: Install runc
+  shell:
+    cmd: "install -m 755 /tmp/runc.amd64 /usr/local/sbin/runc"
+
+# Install CNI plugin
+- name: Create folder for cni downloads
+  file:
+    path: /opt/cni/bin
+    state: directory
+
+- name: Install cni
+  unarchive:
+    src: https://github.com/containernetworking/plugins/releases/download/v1.3.0/cni-plugins-linux-amd64-v1.3.0.tgz
+    dest: /opt/cni/bin
+    remote_src: yes
+    mode: 0755
+    owner: root
+    group: root
+
+# Configure containerd service
+- name: Download containerd service file
+  get_url:
+    url: https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
+    dest: /etc/systemd/system/containerd.service
+
+- name: Create containerd config folder
+  file:
+    path: /etc/containerd
+    state: directory
+
+- name: Start containerd service
+  service:
+    name: containerd
+    state: started
+    enabled: yes
+
+# Configure hosts so that kubeadm and kubelet can work with containerd
+- name: Modprobe br_netfilter
+  shell:
+    cmd: modprobe br_netfilter
+
+- name: Make br_netfilter available at boot
+  copy:
+    src: br_netfilter.conf
+    dest: /etc/modules-load.d/br_netfilter.conf
+    owner: root
+    group: root
+    mode: 0664
+
+# Enable IP forwarding
+- name: Configure IP forwarding
+  lineinfile:
+    path: /etc/sysctl.conf
+    regexp: 'net\.ipv4\.ip_forward'
+    line: net.ipv4.ip_forward=1
+    backrefs: yes
+
+- name: Apply IP forwarding config
+  become: true
+  shell:
+    cmd: sysctl -p

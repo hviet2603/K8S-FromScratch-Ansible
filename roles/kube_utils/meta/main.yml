@@ -1,0 +1,3 @@
+---
+dependencies:
+  - name: kube_utils_prerequisites

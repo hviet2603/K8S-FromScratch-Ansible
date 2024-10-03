@@ -1,0 +1,5 @@
+- hosts: k8s_masters
+  name: Install Kubernetes network addon
+  become: yes
+  roles:
+    - kube_install_cilium

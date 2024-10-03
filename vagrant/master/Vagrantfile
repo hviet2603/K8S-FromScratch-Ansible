@@ -1,0 +1,50 @@
+require 'yaml'
+
+config_path = File.expand_path("../../config.yaml", __FILE__)
+config_vars = YAML.load_file(config_path)
+
+Vagrant.configure("2") do |config|
+
+    config.vm.box = "ubuntu/focal64"
+    config.vm.hostname = config_vars["master_name"]
+    
+    config.vm.network "public_network", 
+      bridge: config_vars["host_adapter"], 
+      ip: config_vars["master_ip"], 
+      netmask: config_vars["master_netmask"],
+      hostname: true
+  
+    config.vm.provider "virtualbox" do |vb|
+      vb.name = config_vars["master_name"]
+      vb.memory = config_vars["master_ram"] 
+      vb.cpus = config_vars["master_cpus"]        
+    end
+
+    config.vm.provision "file", source: config_vars["host_ssh_pubkey"], destination: "~/.ssh/id_rsa.pub"
+
+    config.vm.provision "shell", inline: <<-SHELL
+    sudo useradd -m -s /bin/bash -G sudo user
+    echo "user:user" | sudo chpasswd
+    
+    echo "user ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/user
+
+    # Enable SSH for the user by copying the SSH keys from the vagrant user
+    sudo mkdir -p /home/user/.ssh
+    sudo cat /home/vagrant/.ssh/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys 
+    sudo cp /home/vagrant/.ssh/authorized_keys /home/user/.ssh/ 
+    
+    # Set the ownership and permissions for the user
+    sudo chown -R user:user /home/user/.ssh
+    sudo chmod 700 /home/user/.ssh
+    sudo chmod 600 /home/user/.ssh/authorized_keys
+    
+    # Lock the root account for better security (optional)
+    #sudo passwd -l root
+    SHELL
+
+    # Configure default nameserver
+    config.vm.provision "shell", inline: <<-SHELL
+    sudo sed -i 's/^#*DNS=/DNS=8.8.8.8/' /etc/systemd/resolved.conf
+    sudo systemctl restart systemd-resolved
+    SHELL
+end

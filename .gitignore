@@ -1,0 +1,3 @@
+clean_ssh.sh
+vagrant/**/.vagrant
+vagrant/plugins

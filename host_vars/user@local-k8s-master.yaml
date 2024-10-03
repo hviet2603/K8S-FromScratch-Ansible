@@ -1,0 +1,9 @@
+master_ip: 192.168.0.2
+node_name: local-k8s-master
+worker1_node_name: local-k8s-vworker1
+worker2_node_name: local-k8s-vworker2
+k8s_version: 1.30.4
+pod_net_cidr: 10.10.0.0/16
+cilium_version: 1.16
+kube_config_path: /etc/kubernetes/admin.conf 
+haproxy_ingress_ns: haproxy-controller

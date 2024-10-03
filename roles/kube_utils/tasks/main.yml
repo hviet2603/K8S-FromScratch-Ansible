@@ -1,0 +1,40 @@
+# Install kubeadm, kubelet and kubectl 
+---
+- name: Install utilities
+  package:
+    name:
+      - apt-transport-https 
+      - ca-certificates 
+      - curl
+    state: present
+
+- name: Download public signing key
+  get_url:
+    url: "https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key"
+    dest: /tmp/kubernetes-release-key.gpg
+    force: yes
+    mode: '0644'
+
+- name: Create keyrings folder
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Convert to gpg format and add it to apt keyrings
+  shell: gpg --yes --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg /tmp/kubernetes-release-key.gpg
+
+- name: Add Kubernetes apt repo
+  shell: echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+- name: Update packages sources
+  apt:
+    update_cache: yes
+
+- name: Install kubeadm, kubelet and kubectl
+  package:
+    name:
+      - kubelet
+      - kubeadm
+      - kubectl
+    state: present
