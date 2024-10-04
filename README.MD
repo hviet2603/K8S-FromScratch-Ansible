@@ -36,17 +36,17 @@ The IP addresses should be adapted according to your configuration. You can also
 
 Run the Ansible playbooks with the command `ansible-playbook ${playbook}`:
 
-1. `01-kube_utils.yml`:
+1. `01-kube_utils.yaml`:
 
     -   Install the container runtime (`runc`, `containerd`, `cni`) and K8s utilities (`kubeadm`, `kubelet`, `kubectl`) on the nodes.
     
     -   Set up network related services and modules: enable IP forwarding and the module br_netfilter for the nodes.
 
-2. `02-kube_master.yml`: Initialize the master node or control plane of the cluster.
+2. `02-kube_master.yaml`: Initialize the master node or control plane of the cluster.
 
-3. `03-kube_joins.yml`: Join the worker nodes to the cluster.
+3. `03-kube_joins.yaml`: Join the worker nodes to the cluster.
 
-4. `04-kube_network_addon.yml`: Install Cilium as the network addon for the cluster.
+4. `04-kube_network_addon.yaml`: Install Cilium as the network addon for the cluster.
 
 ### Verifying the installation
 
